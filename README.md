@@ -2,6 +2,15 @@
 
 the php plugin for grpc protobuf to generate php server interface
 
+# install
+
+```bash
+
+go install github.com/hetao29/php-grpc-server-protobuf-plugin@latest
+
+```
+
+
 # usage
 
 ```bash
