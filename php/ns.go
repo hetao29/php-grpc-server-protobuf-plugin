@@ -1,3 +1,25 @@
+// MIT License
+//
+// Copyright (c) 2022 SpiralScout
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 package php
 
 import (
@@ -17,16 +39,16 @@ type ns struct {
 	// Root namespace of the package
 	Namespace string
 
-	// Import declares what namespaces to be imported
-	Import map[string]string
+	// Declares the namespaces of messages used as input and output types for service methods
+	MessageNamespaces map[string]string
 }
 
 // newNamespace creates new work namespace.
 func newNamespace(req *plugin.CodeGeneratorRequest, file *desc.FileDescriptorProto, service *desc.ServiceDescriptorProto) *ns {
 	ns := &ns{
-		Package:   *file.Package,
-		Namespace: namespace(file.Package, "\\"),
-		Import:    make(map[string]string),
+		Package:           deref(file.Package),
+		Namespace:         namespace(file.Package, "\\"),
+		MessageNamespaces: make(map[string]string),
 	}
 
 	if file.Options != nil && file.Options.PhpNamespace != nil {
@@ -34,15 +56,15 @@ func newNamespace(req *plugin.CodeGeneratorRequest, file *desc.FileDescriptorPro
 	}
 
 	for k := range service.Method {
-		ns.importMessage(req, service.Method[k].InputType)
-		ns.importMessage(req, service.Method[k].OutputType)
+		ns.registerMessageNamespace(req, service.Method[k].InputType)
+		ns.registerMessageNamespace(req, service.Method[k].OutputType)
 	}
 
 	return ns
 }
 
-// importMessage registers new import message namespace (only the namespace).
-func (ns *ns) importMessage(req *plugin.CodeGeneratorRequest, msg *string) {
+// Registers the namespace of a message used as an input or output type for a service method.
+func (ns *ns) registerMessageNamespace(req *plugin.CodeGeneratorRequest, msg *string) {
 	if msg == nil {
 		return
 	}
@@ -62,16 +84,16 @@ func (ns *ns) importMessage(req *plugin.CodeGeneratorRequest, msg *string) {
 	}
 
 	for _, f := range req.ProtoFile {
-		if pkg == "."+*f.Package {
+		if pkg == "."+deref(f.Package) {
 			if f.Options != nil && f.Options.PhpNamespace != nil {
-				// custom imported namespace
-				ns.Import[pkg] = *f.Options.PhpNamespace
+				// custom message namespace
+				ns.MessageNamespaces[pkg] = *f.Options.PhpNamespace
 				return
 			}
 		}
 	}
 
-	ns.Import[pkg] = strings.Trim(result.String(), `\`)
+	ns.MessageNamespaces[pkg] = strings.Trim(result.String(), `\`)
 }
 
 // resolve message alias
@@ -84,15 +106,14 @@ func (ns *ns) resolve(msg *string) string {
 		return identifier(chunks[len(chunks)-1], "")
 	}
 
-	for iPkg, ns := range ns.Import {
+	for iPkg, ns := range ns.MessageNamespaces {
 		if pkg == iPkg {
 			// use last namespace chunk
-			nsChunks := strings.Split(ns, `\`)
 			identifier := identifier(chunks[len(chunks)-1], "")
 
 			return fmt.Sprintf(
-				`%s\%s`,
-				nsChunks[len(nsChunks)-1],
+				`\%s\%s`,
+				ns,
 				resolveReserved(identifier, pkg),
 			)
 		}
@@ -100,4 +121,11 @@ func (ns *ns) resolve(msg *string) string {
 
 	// fully clarified name (fallback)
 	return "\\" + namespace(msg, "\\")
+}
+
+func deref(val *string) string {
+	if val == nil {
+		return ""
+	}
+	return *val
 }

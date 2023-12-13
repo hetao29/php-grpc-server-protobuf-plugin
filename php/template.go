@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2018 SpiralScout
+// Copyright (c) 2022 SpiralScout
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -49,7 +49,8 @@ interface {{ .Service.Name | interface }}
     public const NAME = "{{ .File.Package }}.{{ .Service.Name }}";{{ "\n" }}
 {{- range $m := .Service.Method}}
     /**
-    * @param {{ name $ns $m.InputType }} $request
+    * @param GRPC\ContextInterface $ctx
+    * @param {{ name $ns $m.InputType }} $in
     * @return {{ name $ns $m.OutputType }}
     *
     * @throws \Exception

@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2018 SpiralScout
+// Copyright (c) 2022 SpiralScout
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@ package main
 
 import (
 	"io"
-	"io/ioutil"
 	"os"
 
 	"github.com/hetao29/php-grpc-server-protobuf-plugin/php"
@@ -44,7 +43,7 @@ func main() {
 }
 
 func readRequest(in io.Reader) (*plugin.CodeGeneratorRequest, error) {
-	data, err := ioutil.ReadAll(in)
+	data, err := io.ReadAll(in)
 	if err != nil {
 		return nil, err
 	}
