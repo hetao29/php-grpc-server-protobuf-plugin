@@ -39,7 +39,7 @@ const phpBody = `<?php
 {{if $ns.Namespace}}
 namespace {{ $ns.Namespace }};
 {{end}}
-{{- range $n := $ns.Import}}
+{{- range $n := $ns.MessageNamespaces}}
 use {{ $n }};
 {{- end}}
 
