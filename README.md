@@ -1,3 +1,6 @@
+# Deprecated
+link to https://github.com/roadrunner-server/grpc/tree/master/protoc_plugins
+
 # php-grpc-server-protobuf-plugin
 
 the php plugin for grpc protobuf to generate php server interface
