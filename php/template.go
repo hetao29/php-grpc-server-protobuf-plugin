@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2022 SpiralScout
+// Copyright (c) 2018 SpiralScout
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,7 @@ const phpBody = `<?php
 {{if $ns.Namespace}}
 namespace {{ $ns.Namespace }};
 {{end}}
-{{- range $n := $ns.MessageNamespaces}}
+{{- range $n := $ns.MessageNamespaces }}
 use {{ $n }};
 {{- end}}
 
@@ -49,8 +49,7 @@ interface {{ .Service.Name | interface }}
     public const NAME = "{{ .File.Package }}.{{ .Service.Name }}";{{ "\n" }}
 {{- range $m := .Service.Method}}
     /**
-    * @param GRPC\ContextInterface $ctx
-    * @param {{ name $ns $m.InputType }} $in
+    * @param {{ name $ns $m.InputType }} $request
     * @return {{ name $ns $m.OutputType }}
     *
     * @throws \Exception
