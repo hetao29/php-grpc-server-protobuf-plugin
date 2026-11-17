@@ -23,15 +23,23 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"os"
 
-	"github.com/hetao29/php-grpc-server-protobuf-plugin/php"
+	"github.com/hetao29/php-grpc-server-protobuf-plugin/v2/php"
 	"google.golang.org/protobuf/proto"
 	plugin "google.golang.org/protobuf/types/pluginpb"
 )
 
+var version = "2.0.0"
+
 func main() {
+	if len(os.Args) == 2 && os.Args[1] == "--version" {
+		fmt.Printf("php-grpc-server-protobuf-plugin %s\n", version)
+		return
+	}
+
 	req, err := readRequest(os.Stdin)
 	if err != nil {
 		panic(err)

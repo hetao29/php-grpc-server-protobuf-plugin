@@ -49,12 +49,12 @@ interface {{ .Service.Name | interface }}
     public const NAME = "{{ .File.Package }}.{{ .Service.Name }}";{{ "\n" }}
 {{- range $m := .Service.Method}}
     /**
-    * @param {{ name $ns $m.InputType }} $request
-    * @return {{ name $ns $m.OutputType }}
+    * @param {{ if $m.GetClientStreaming }}\GRpcStream $request Stream of {{ name $ns $m.InputType }} messages.{{ else }}{{ name $ns $m.InputType }} $request{{ end }}
+    * @return {{ if $m.GetServerStreaming }}iterable<{{ name $ns $m.OutputType }}>{{ else }}{{ name $ns $m.OutputType }}{{ end }}
     *
     * @throws \Exception
     */
-    public function {{ $m.Name }}({{ name $ns $m.InputType }} $request): {{ name $ns $m.OutputType }};
+    public function {{ $m.Name }}({{ if $m.GetClientStreaming }}\GRpcStream{{ else }}{{ name $ns $m.InputType }}{{ end }} $request): {{ if $m.GetServerStreaming }}iterable{{ else }}{{ name $ns $m.OutputType }}{{ end }};
 {{end -}}
 }
 `

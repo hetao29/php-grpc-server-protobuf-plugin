@@ -1,4 +1,4 @@
-module github.com/hetao29/php-grpc-server-protobuf-plugin
+module github.com/hetao29/php-grpc-server-protobuf-plugin/v2
 
 go 1.21
 

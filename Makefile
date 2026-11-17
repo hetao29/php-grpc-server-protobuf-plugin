@@ -1,4 +1,9 @@
+VERSION ?= 2.0.0
+BINARY ?= php-grpc-server-protobuf-plugin
+
+.PHONY: build test
 build:
-	export GOPROXY=https://goproxy.cn &&  go build -v -ldflags "-X main.version=1.0.0 -X main.build=`date -u +%Y-%m-%d%H:%M:%S`" -o php-grpc-server-protobuf-plugin .
+	go build -trimpath -ldflags "-X main.version=$(VERSION)" -o "$(BINARY)" .
+
 test:
-	export GOPROXY=https://goproxy.cn &&  go build -v -ldflags "-X main.version=1.0.0 -X main.build=`date -u +%Y-%m-%d%H:%M:%S`" -o plugin_test plugin_test.go
+	go test ./...
